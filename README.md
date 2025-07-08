@@ -1,5 +1,3 @@
-# hex-fucker
-
 # Hex Fucker - Video Hex Corruption Tool
 
 A Python tool for creating glitch art by corrupting video files at the hex level. Targets AVI frame data chunks while preserving file structure integrity for playable corrupted videos.
@@ -14,8 +12,8 @@ A Python tool for creating glitch art by corrupting video files at the hex level
 - **Flexible Targeting**: Corrupt every Nth frame, random frames, or time-based offsets
 - **Safe Corruption**: Preserves file structure to maintain video playability
 - **Detailed Logging**: Track exactly what was corrupted and where
-- **Smear Mode (Temporal Drag/Smear)**: New! Applies large, stable-pattern corruptions in a sliding window for temporal smear effects, with header safety and reduced jitter
-- **FFmpeg Auto-Encode**: New! Optionally re-encodes your input video with smear-friendly settings (sparse I-frames, B-frames) for optimal glitching and smear effects
+- **Smear Mode (Temporal Drag/Smear) [EXPERIMENTAL]**: Applies large, stable-pattern corruptions in a sliding window for temporal smear effects, with header safety and reduced jitter. May cause playback issues or unexpected results.
+- **FFmpeg Auto-Encode**: Optionally re-encodes your input video with refined settings (sparse I-frames, B-frames) for optimal glitching and smear effects
 
 ## Quick Start
 
@@ -34,7 +32,8 @@ python hex_fucker.py input.avi output.avi --pattern static_grit,bitflip_noise,gh
 # Fucked intensity: maximum chaos, overlap, and overwrite size
 python hex_fucker.py input.avi output.avi --pattern all --intensity fucked
 
-# Smear mode: temporal drag/smear effect with stable patterns and sliding window
+# Smear mode (EXPERIMENTAL): temporal drag/smear effect with stable patterns and sliding window
+# WARNING: This mode is experimental and may break video playback or cause unexpected results.
 python hex_fucker.py input.avi output.avi --smear-mode
 
 # Auto-encode for best smear results (recommended for most videos)
@@ -242,14 +241,16 @@ The `--intensity` argument controls how aggressively and chaotically the tool co
 - *Overlap*: Whether overwrites can overlap (yes = more intense, no = more spaced out)
 - *Skip Header Bytes*: Always skip the first 8 bytes of each chunk (start corrupting from byte 9)
 
-## Smear Mode (Temporal Drag/Smear)
+## Smear Mode (Temporal Drag/Smear) [EXPERIMENTAL]
+
+**WARNING:** Smear mode is experimental and may cause video playback issues or unexpected results. Use with caution and always back up your original files.
 
 **Smear mode** is a special corruption mode designed to create temporal drag and smear effects across video frames, with reduced chaotic jitter and improved visual persistence. When enabled:
 
-- **Corruption is applied every 4000–8000 bytes further into each subsequent frame** (sliding window effect)
+- **Corruption is applied at the start of each frame's data** (after the chunk header)
 - **Each corruption block is 1024 bytes** (large, visually persistent)
 - **2–3 stable patterns** are randomly selected at the start and reused for all corruptions in this run (pattern stability)
-- **Header safety:** No corruption is applied to any file offset within the first 100KB, preserving file readability
+- **Header safety:** No corruption is applied to any file offset within the first 10KB, preserving file readability
 - **First 2 frames are skipped** (to avoid likely I-frames)
 - **Enable with:** `--smear-mode`
 
@@ -258,7 +259,7 @@ The `--intensity` argument controls how aggressively and chaotically the tool co
 python hex_fucker.py input.avi output.avi --smear-mode
 ```
 
-This mode is ideal for creating motion drag, echo, and temporal smear effects, especially on videos with visible motion.
+This mode is ideal for creating motion drag, echo, and temporal smear effects, especially on videos with visible motion. However, it may break video playback or cause the video to play only a split second. Use at your own risk.
 
 ## FFmpeg Auto-Encode (Recommended for Smear Mode)
 

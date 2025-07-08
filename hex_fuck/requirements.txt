@@ -1,0 +1,7 @@
+# Video Glitcher Dependencies
+# No external dependencies required - uses only Python standard library
+# Tested with Python 3.6+
+
+# Optional: For additional video format support in future versions
+# opencv-python>=4.5.0
+# pillow>=8.0.0 
